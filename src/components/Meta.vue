@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: 'Metadata',
+  name: 'Meta',
   props: [ '$todos' ]
 }
 </script>

@@ -13,7 +13,7 @@ import Form from '@/components/Form.vue';
 import Todos from '@/components/Todos.vue';
 
 export default {
-  name: 'app',
+  name: 'App',
   components: { Meta, Form, Todos },
 }
 </script>
