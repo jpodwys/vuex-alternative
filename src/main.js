@@ -11,6 +11,5 @@ Vue.use(vstore);
 
 new Vue({
   store,
-  sup: { a: 'b' },
   render: h => h(App),
 }).$mount('#app')
