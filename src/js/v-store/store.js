@@ -23,7 +23,6 @@ const state = new Proxy(
 
 const actions = {
   addTodo (todo) {
-    if (!todo) return;
     state.todos.unshift(todo);
     state.todos = [].concat(state.todos);
   },

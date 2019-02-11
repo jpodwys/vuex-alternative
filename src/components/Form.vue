@@ -16,6 +16,7 @@ export default {
   },
   methods: {
     onSubmit () {
+      if (!this.input) return;
       this.$addTodo(this.input);
       this.input = '';
     }
