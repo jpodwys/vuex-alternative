@@ -1,28 +1,29 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <h1>Todos</h1>
+    <Meta/>
+    <Form/>
+    <Todos/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Meta from '@/components/Meta.vue';
+import Form from '@/components/Form.vue';
+import Todos from '@/components/Todos.vue';
 
 export default {
   name: 'app',
-  components: {
-    HelloWorld
-  }
+  components: { Meta, Form, Todos },
 }
 </script>
 
-<style>
+<style scoped>
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  width: 200px;
+  margin: auto;
+}
+h1 {
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
