@@ -5,6 +5,17 @@ Vue.config.warnHandler = (msg, vm, trace) => {
   console.error(msg, trace);
 }
 
+const getStorePropKeys = el => Object.keys(el.$props).filter(prop => prop[0] === '$');
+
+const setup = el => {
+  const options = el.$options
+  if (options.store) {
+    el.$store = options.store;
+  } else if (options.parent && options.parent.$store) {
+    el.$store = options.parent.$store
+  }
+};
+
 /**
  * 1. Check if it's a state variable
  * 2. If it is, setup a listeners array for it
@@ -12,50 +23,57 @@ Vue.config.warnHandler = (msg, vm, trace) => {
  * 4. On vue instance destroy, remove the appropriate listener
  * 5. If it's an action, assign a reference to it on the vue instance
  */
-const handle = el => {
+const listen = el => {
   if (!el.$props) return;
-  const props = Object.keys(el.$props).filter(prop => prop[0] === '$');
+  const props = getStorePropKeys(el);
   const store = el.$store;
   props.forEach(prop => {
     const propName = prop.slice(1);
     if (store.state[propName] !== undefined) {
-      store.listeners[propName] = store.listeners[propName] || [];
-      store.listeners[propName].push({ el });
+      store.listeners[propName] = store.listeners[propName] || {};
+      store.listeners[propName][el._uid] = el;
       el.$props[prop] = store.state[propName];
     }
     if (store.actions[propName] !== undefined) {
       el.$props[prop] = store.actions[propName];
     }
   });
-}
+};
+
+/**
+ * Create list of store props
+ * Iterate over each finding the ones that are state variables
+ * For each of them, remove the listener for this vue instance
+ * If there are no more listeners, delete listeners[propName]
+ */
+const unListen = el => {
+  if (!el.$props) return;
+  const props = getStorePropKeys(el);
+  const store = el.$store;
+  props.forEach(prop => {
+    const propName = prop.slice(1);
+    const listeners = store.listeners[propName];
+    if (!listeners) return;
+    delete listeners[el._uid];
+  });
+};
 
 export default {
   install: function (Vue/*, options*/) {
     Vue.mixin({
-      // inheritAttrs: false,
       beforeCreate () {
-        const options = this.$options
-        if (options.store) {
-          this.$store = options.store;
-        } else if (options.parent && options.parent.$store) {
-          this.$store = options.parent.$store
-        }
+        setup(this);
       },
       created () {
-        handle(this);
+        listen(this);
       },
       beforeUpdate () {
-        handle(this);
+        listen(this);
       },
       beforeDestroy () {
-        /**
-         * Create list of store props
-         * Iterate over each finding the ones that are state variables
-         * For each of them, remove the listener for this vue instance
-         * If there are no more listeners, delete listeners[propName]
-         */
+        unListen(this);
       }
       // activated/deactivated
     });
   }
-}
+};

@@ -2,19 +2,19 @@ const listeners = {};
 
 const initialState = {
   todos: []
-}
+};
 
 const handler = {
   set (obj, prop, next) {
     obj[prop] = next;
-    const cbs = listeners[prop];
-    if (!cbs) return true;
-    cbs.reverse().forEach(cb => {
-      cb.el.$props[`$${prop}`] = next;
+    const els = listeners[prop];
+    if (!els) return true;
+    Object.keys(els).reverse().forEach(id => {
+      els[id].$props[`$${prop}`] = next;
     });
     return true;
   }
-}
+};
 
 const state = new Proxy(
   initialState,
@@ -36,4 +36,4 @@ export default {
   state,
   actions,
   listeners
-}
+};
