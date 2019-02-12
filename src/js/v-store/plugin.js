@@ -16,13 +16,6 @@ const setup = el => {
   }
 };
 
-/**
- * 1. Check if it's a state variable
- * 2. If it is, setup a listeners array for it
- * 3. Store a reference to the vue instance in the listeners array
- * 4. On vue instance destroy, remove the appropriate listener
- * 5. If it's an action, assign a reference to it on the vue instance
- */
 const subscribe = el => {
   if (!el.$props) return;
   const props = getStorePropKeys(el);
@@ -39,12 +32,6 @@ const subscribe = el => {
   });
 };
 
-/**
- * Create list of store props
- * Iterate over each finding the ones that are state variables
- * For each of them, remove the listener for this vue instance
- * If there are no more listeners, delete listeners[propName]
- */
 const unsubscribe = el => {
   if (!el.$props) return;
   const props = getStorePropKeys(el);
@@ -69,6 +56,5 @@ export default (Vue/*, options*/) => {
     beforeDestroy () {
       unsubscribe(this);
     }
-    // activated/deactivated
   });
 };
