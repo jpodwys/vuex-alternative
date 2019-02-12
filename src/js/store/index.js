@@ -4,14 +4,17 @@ import Vstore from "../v-store";
 Vue.use(Vstore);
 
 const state = {
-  todos: [],
+  todos: []
+};
+
+const computed = {
   newestTodo: {
     args: [ 'todos' ],
-    compute: (todos) => todos ? todos[0] : ''
+    cb: (todos) => todos ? todos[0] : ''
   },
   oldestTodo: {
     args: [ 'todos' ],
-    compute: (todos) => todos ? todos[todos.length - 1] : ''
+    cb: (todos) => todos ? todos[todos.length - 1] : ''
   }
 };
 
@@ -28,5 +31,6 @@ const actions = {
 
 export default new Vstore.Store({
   state,
+  computed,
   actions
 });

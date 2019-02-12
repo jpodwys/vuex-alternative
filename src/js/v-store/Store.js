@@ -1,16 +1,16 @@
 let STATE;
+let observers;
 const subscribers = {};
-const observers = {};
 
 const compute = (obj, prop) => {
   Object.keys(observers).forEach(computedKey => {
     const observer = observers[computedKey];
     const observedArgs = observer.args;
-    const computer = observer.compute;
+    const cb = observer.cb;
     if (observedArgs.indexOf(prop) < 0) return;
     const args = [];
     observedArgs.forEach(arg => args.push(obj[arg]));
-    STATE[computedKey] = computer.apply(null, args);
+    STATE[computedKey] = cb.apply(null, args);
   });
 }
 
@@ -28,29 +28,11 @@ const handler = {
 }
 
 export default class Store {
-  constructor ({ state = {}, actions = {} }) {
-    /**
-     * Separate computed into a different object
-     * Add entries to the observers object
-     * Generate a Proxy object
-     * Add remaining state keys to the Proxy object
-     */
-
-    const regular = {};
-    Object.keys(state).forEach(prop => {
-      if (typeof state[prop] === 'object' && !Array.isArray(state[prop])) {
-        const args = state[prop].args;
-        const compute = state[prop].compute;
-        if (args && Array.isArray(args) && compute && typeof compute === 'function') {
-          return observers[prop] = state[prop];
-        }
-      } else {
-        regular[prop] = state[prop];
-      }
-    });
+  constructor ({ state = {}, computed = {}, actions = {} }) {
+    observers = computed;
 
     this.state = STATE = new Proxy({}, handler);
-    Object.assign(this.state, regular);
+    Object.assign(this.state, state);
 
     this.actions = {};
     Object.keys(actions).forEach(action => {
