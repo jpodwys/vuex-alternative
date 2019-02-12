@@ -8,11 +8,11 @@ const state = {
 };
 
 const actions = {
-  addTodo (todo) {
+  addTodo (state, todo) {
     state.todos.unshift(todo);
     state.todos = [].concat(state.todos);
   },
-  removeTodo (index) {
+  removeTodo (state, index) {
     state.todos.splice(index, 1);
     state.todos = [].concat(state.todos);
   }

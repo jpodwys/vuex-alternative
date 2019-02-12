@@ -31,10 +31,10 @@ const subscribe = el => {
     const propName = prop.slice(1);
     if (store.state[propName] !== undefined) {
       store.subscribe(propName, el);
-      el.$props[prop] = store.state[propName];
+      return el.$props[prop] = store.state[propName];
     }
     if (store.actions[propName] !== undefined) {
-      el.$props[prop] = store.actions[propName];
+      return el.$props[prop] = store.actions[propName];
     }
   });
 };
