@@ -1,20 +1,39 @@
+let STATE;
+let observers;
 const subscribers = {};
+
+const compute = (obj, prop) => {
+  Object.keys(observers).forEach(computedKey => {
+    const observer = observers[computedKey];
+    const observedArgs = observer.args;
+    const cb = observer.cb;
+    if (observedArgs.indexOf(prop) < 0) return;
+    const args = [];
+    observedArgs.forEach(arg => args.push(obj[arg]));
+    STATE[computedKey] = cb.apply(null, args);
+  });
+}
 
 const handler = {
   set (obj, prop, next) {
     obj[prop] = next;
     const els = subscribers[prop];
     if (!els) return true;
-    Object.keys(els).reverse().forEach(id => {
+    Object.keys(els).forEach(id => {
       els[id].$props[`$${prop}`] = next;
     });
+    compute(obj, prop);
     return true;
   }
 }
 
 export default class Store {
-  constructor ({ state = {}, actions = {} }) {
-    this.state = new Proxy(state, handler);
+  constructor ({ state = {}, computed = {}, actions = {} }) {
+    observers = computed;
+
+    this.state = STATE = new Proxy({}, handler);
+    Object.assign(this.state, state);
+
     this.actions = {};
     Object.keys(actions).forEach(action => {
       this.actions[action] = actions[action].bind(null, this.state);
@@ -28,7 +47,6 @@ export default class Store {
 
   unsubscribe (name, el) {
     const subs = subscribers[name];
-    if (!subs) return;
-    delete subs[el._uid];
+    if (subs) delete subs[el._uid];
   }
 }

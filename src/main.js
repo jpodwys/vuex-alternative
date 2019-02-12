@@ -1,10 +1,9 @@
 import Vue from 'vue'
 import App from './App.vue'
 import store from '@/js/store';
+window.store = store;
 
 Vue.config.productionTip = false
-
-// window.store = store;
 
 new Vue({
   store,
