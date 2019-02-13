@@ -4,7 +4,7 @@ import Vstore from "../v-store";
 Vue.use(Vstore);
 
 const state = {
-  todos: []
+  todos: JSON.parse(localStorage.getItem('items')) || []
 };
 
 const computed = {
@@ -16,6 +16,10 @@ const computed = {
     args: [ 'todos' ],
     cb: (todos) => todos ? todos[todos.length - 1] : ''
   }
+};
+
+const watchers = {
+  todos: (todos) => localStorage.setItem('items', JSON.stringify(todos))
 };
 
 const actions = {
@@ -32,5 +36,6 @@ const actions = {
 export default new Vstore.Store({
   state,
   computed,
+  watchers,
   actions
 });
