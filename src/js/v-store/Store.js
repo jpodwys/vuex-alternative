@@ -3,7 +3,7 @@ let COMPUTED;
 let WATCHERS;
 const SUBSCRIBERS = {};
 
-const compute = (obj, prop, next) => {
+const compute = (obj, prop, next, prev) => {
   Object.keys(COMPUTED).forEach(computedKey => {
     const observer = COMPUTED[computedKey];
     const observedArgs = observer.args;
@@ -15,18 +15,19 @@ const compute = (obj, prop, next) => {
   });
 }
 
-const watch = (obj, prop, next) => {
+const watch = (obj, prop, next, prev) => {
   const watchedKeys = Object.keys(WATCHERS);
   const index = watchedKeys.indexOf(prop);
   if (index < 0) return;
-  WATCHERS[watchedKeys[index]](next);
+  WATCHERS[watchedKeys[index]](next, prev);
 }
 
 const handler = {
   set (obj, prop, next) {
+    const prev = obj[prop];
     obj[prop] = next;
-    compute(obj, prop, next);
-    watch(obj, prop, next);
+    compute(obj, prop, next, prev);
+    watch(obj, prop, next, prev);
     const els = SUBSCRIBERS[prop];
     if (!els) return true;
     Object.keys(els).forEach(id => {
